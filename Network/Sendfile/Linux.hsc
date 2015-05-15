@@ -49,7 +49,7 @@ import System.Posix.Types
 
 sendfile :: Socket -> FilePath -> FileRange -> IO () -> IO ()
 sendfile sock path range hook = bracket setup teardown $ \fd -> do
-    putStrLn $ "sendfile range: " ++ show range
+    Prelude.putStrLn $ "sendfile range: " ++ show range
     sendfileFd sock fd range hook
   where
     setup = openFd path ReadOnly Nothing defaultFileFlags
@@ -75,20 +75,20 @@ sendfileFd :: Socket -> Fd -> FileRange -> IO () -> IO ()
 sendfileFd sock fd range hook =
     alloca $ \offp -> case range of
         EntireFile -> do
-            putStrLn "EntireFile"
+            Prelude.putStrLn "EntireFile"
             poke offp 0
             -- System call is very slow. Use PartOfFile instead.
             len <- fileSize <$> getFdStatus fd
-            putStrLn $ "sendfileFd len: " ++ show len
+            Prelude.putStrLn $ "sendfileFd len: " ++ show len
             let len' = fromIntegral len
-            putStrLn $ "sendfileFd len': " ++ show len'
+            Prelude.putStrLn $ "sendfileFd len': " ++ show len'
             sendfileloop dst fd offp len' hook
         PartOfFile off len -> do
-            putStrLn "PartOfFile"
+            Prelude.putStrLn "PartOfFile"
             poke offp (fromIntegral off)
-            putStrLn $ "sendfileFd len: " ++ show len
+            Prelude.putStrLn $ "sendfileFd len: " ++ show len
             let len' = fromIntegral len
-            putStrLn $ "sendfileFd len': " ++ show len'
+            Prelude.putStrLn $ "sendfileFd len': " ++ show len'
             sendfileloop dst fd offp len' hook
   where
     dst = Fd $ fdSocket sock
@@ -97,8 +97,8 @@ sendfileloop :: Fd -> Fd -> Ptr COff -> CSize -> IO () -> IO ()
 sendfileloop dst src offp len hook = do
     -- Multicore IO manager use edge-trigger mode.
     -- So, calling threadWaitWrite only when errnor is eAGAIN.
-    putStrLn $ "sendfileloop offp: " ++ show offp
-    putStrLn $ "sendfileloop len: " ++ show len
+    Prelude.putStrLn $ "sendfileloop offp: " ++ show offp
+    Prelude.putStrLn $ "sendfileloop len: " ++ show len
     bytes <- c_sendfile dst src offp len
     case bytes of
         -1 -> do
