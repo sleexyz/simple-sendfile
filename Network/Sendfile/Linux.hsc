@@ -49,7 +49,6 @@ import System.Posix.Types
 
 sendfile :: Socket -> FilePath -> FileRange -> IO () -> IO ()
 sendfile sock path range hook = bracket setup teardown $ \fd -> do
-    Prelude.putStrLn $ "sendfile range: " ++ show range
     sendfileFd sock fd range hook
   where
     setup = openFd path ReadOnly Nothing defaultFileFlags
@@ -75,7 +74,7 @@ sendfileFd :: Socket -> Fd -> FileRange -> IO () -> IO ()
 sendfileFd sock fd range hook =
     alloca $ \offp -> case range of
         EntireFile -> do
-            Prelude.putStrLn "EntireFile"
+            Prelude.putStrLn "sendfileFd EntireFile"
             poke offp 0
             -- System call is very slow. Use PartOfFile instead.
             len <- fileSize <$> getFdStatus fd
@@ -84,8 +83,11 @@ sendfileFd sock fd range hook =
             Prelude.putStrLn $ "sendfileFd len': " ++ show len'
             sendfileloop dst fd offp len' hook
         PartOfFile off len -> do
-            Prelude.putStrLn "PartOfFile"
-            poke offp (fromIntegral off)
+            Prelude.putStrLn "sendfileFd PartOfFile"
+            Prelude.putStrLn $ "sendfileFd off: " ++ show off
+            let off' = fromIntegral off
+            Prelude.putStrLn $ "sendfileFd off': " ++ show off'
+            poke offp off'
             Prelude.putStrLn $ "sendfileFd len: " ++ show len
             let len' = fromIntegral len
             Prelude.putStrLn $ "sendfileFd len': " ++ show len'
