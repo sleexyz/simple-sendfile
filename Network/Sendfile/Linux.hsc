@@ -26,6 +26,7 @@ import System.Posix.Files
 import System.Posix.IO
 import System.Posix.Types
 
+#define _LARGEFILE64_SOURCE 1
 #define _FILE_OFFSET_BITS 64
 
 #include <sys/sendfile.h>
