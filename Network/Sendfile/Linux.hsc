@@ -1,4 +1,4 @@
-{-# LANGUAGE ForeignFunctionInterface #-}
+{-# LANGUAGE ForeignFunctionInterface, CPP #-}
 
 module Network.Sendfile.Linux (
     sendfile
@@ -25,6 +25,8 @@ import Network.Socket
 import System.Posix.Files
 import System.Posix.IO
 import System.Posix.Types
+
+#define _FILE_OFFSET_BITS 64
 
 #include <sys/sendfile.h>
 #include <sys/socket.h>
