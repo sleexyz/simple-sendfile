@@ -200,7 +200,7 @@ sendloop s buf len = do
     if bytes == -1 then do
         errno <- getErrno
         if errno == eAGAIN then do
-            threadWaitWrite (Fd s)
+            threadWaitWrite s
             sendloop s buf len
           else
             throwErrno "Network.SendFile.Linux.sendloop"
