@@ -191,7 +191,7 @@ sendMsgMore sock bs = withForeignPtr fptr $ \ptr -> do
         siz = fromIntegral len
     sendloop s buf siz
   where
-    MkSocket s _ _ _ _ = sock
+    s = Fd $ fdSocket sock
     PS fptr off len = bs
 
 sendloop :: Fd -> Ptr CChar -> CSize -> IO ()
